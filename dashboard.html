@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVL Tree Candidate Dashboard</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .control-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .control-panel h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #ddd;
+            margin-top: 5px;
+        }
+
+        button.secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .tree-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #canvas {
+            flex: 1;
+            min-height: 500px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box .label {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-box .value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .candidates-list {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .candidates-list h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .candidates-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .candidates-table th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .candidates-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .candidates-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-size: 1.1em;
+        }
+
+        .node-circle {
+            fill: #667eea;
+            stroke: #764ba2;
+            stroke-width: 2px;
+        }
+
+        .node-text {
+            fill: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+
+        .link-line {
+            fill: none;
+            stroke: #999;
+            stroke-width: 2px;
+        }
+
+        .animation-info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            color: #1565c0;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .animation-info.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tree-container, .control-panel, .candidates-list {
+            animation: slideIn 0.4s ease;
+        }
+
+        @media (max-width: 1000px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .control-panel {
+                position: static;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌳 AVL Tree Candidate Dashboard</h1>
+            <p>Skill-Based Candidate Shortlisting System with Real-Time Tree Visualization</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <h2>Add Candidate</h2>
+                
+                <div class="form-group">
+                    <label for="name">Candidate Name</label>
+                    <input type="text" id="name" placeholder="e.g., John Doe">
+                </div>
+
+                <div class="form-group">
+                    <label for="skill">Skill</label>
+                    <input type="text" id="skill" placeholder="e.g., JavaScript">
+                </div>
+
+                <div class="form-group">
+                    <label for="score">Score (0-100)</label>
+                    <input type="number" id="score" min="0" max="100" placeholder="85">
+                </div>
+
+                <button onclick="addCandidate()">➕ Add Candidate</button>
+                <button class="secondary" onclick="resetForm()">↻ Reset Form</button>
+                <button class="secondary" onclick="clearAll()">🗑️ Clear All</button>
+
+                <div class="animation-info" id="animationInfo"></div>
+            </div>
+
+            <!-- Tree Visualization -->
+            <div class="tree-container">
+                <h2>AVL Tree Visualization</h2>
+                <svg id="canvas"></svg>
+                
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="label">Tree Height</div>
+                        <div class="value" id="treeHeight">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label">Total Nodes</div>
+                        <div class="value" id="totalNodes">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label">Balance Factor</div>
+                        <div class="value" id="balanceFactor">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Candidates List -->
+        <div class="candidates-list">
+            <h2>📋 All Candidates (Sorted by Score - Descending)</h2>
+            <table class="candidates-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th>Skill</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="candidatesBody">
+                    <tr>
+                        <td colspan="4" class="empty-message">No candidates added yet. Start by adding a candidate!</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // AVL Tree Node implementation in JavaScript
+        class AVLNode {
+            constructor(name, skill, score) {
+                this.name = name;
+                this.skill = skill;
+                this.score = score;
+                this.left = null;
+                this.right = null;
+                this.height = 1;
+            }
+        }
+
+        class AVLTree {
+            constructor() {
+                this.root = null;
+            }
+
+            getHeight(node) {
+                return node ? node.height : 0;
+            }
+
+            getBalance(node) {
+                return node ? this.getHeight(node.left) - this.getHeight(node.right) : 0;
+            }
+
+            updateHeight(node) {
+                if (node) {
+                    node.height = Math.max(this.getHeight(node.left), this.getHeight(node.right)) + 1;
+                }
+            }
+
+            rotateRight(y) {
+                const x = y.left;
+                const T2 = x.right;
+
+                x.right = y;
+                y.left = T2;
+
+                this.updateHeight(y);
+                this.updateHeight(x);
+
+                return x;
+            }
+
+            rotateLeft(x) {
+                const y = x.right;
+                const T2 = y.left;
+
+                y.left = x;
+                x.right = T2;
+
+                this.updateHeight(x);
+                this.updateHeight(y);
+
+                return y;
+            }
+
+            insert(name, skill, score) {
+                this.root = this._insertHelper(this.root, name, skill, score);
+            }
+
+            _insertHelper(node, name, skill, score) {
+                if (!node) {
+                    return new AVLNode(name, skill, score);
+                }
+
+                if (score < node.score || (score === node.score && name < node.name)) {
+                    node.left = this._insertHelper(node.left, name, skill, score);
+                } else if (score > node.score || (score === node.score && name > node.name)) {
+                    node.right = this._insertHelper(node.right, name, skill, score);
+                } else {
+                    return node; // Duplicate
+                }
+
+                this.updateHeight(node);
+
+                const balance = this.getBalance(node);
+
+                // Left Left Case
+                if (balance > 1 && (score < node.left.score || (score === node.left.score && name < node.left.name))) {
+                    return this.rotateRight(node);
+                }
+
+                // Right Right Case
+                if (balance < -1 && (score > node.right.score || (score === node.right.score && name > node.right.name))) {
+                    return this.rotateLeft(node);
+                }
+
+                // Left Right Case
+                if (balance > 1 && (score > node.left.score || (score === node.left.score && name > node.left.name))) {
+                    node.left = this.rotateLeft(node.left);
+                    return this.rotateRight(node);
+                }
+
+                // Right Left Case
+                if (balance < -1 && (score < node.right.score || (score === node.right.score && name < node.right.name))) {
+                    node.right = this.rotateRight(node.right);
+                    return this.rotateLeft(node);
+                }
+
+                return node;
+            }
+
+            getInorder(node = this.root, result = []) {
+                if (node) {
+                    this.getInorder(node.left, result);
+                    result.push({ name: node.name, skill: node.skill, score: node.score });
+                    this.getInorder(node.right, result);
+                }
+                return result;
+            }
+
+            getReverseInorder(node = this.root, result = []) {
+                if (node) {
+                    this.getReverseInorder(node.right, result);
+                    result.push({ name: node.name, skill: node.skill, score: node.score });
+                    this.getReverseInorder(node.left, result);
+                }
+                return result;
+            }
+
+            isEmpty() {
+                return !this.root;
+            }
+        }
+
+        // Initialize tree
+        const tree = new AVLTree();
+
+        // Add sample data
+        const sampleCandidates = [
+            { name: "Alice Johnson", skill: "Python", score: 85 },
+            { name: "Bob Smith", skill: "JavaScript", score: 78 },
+            { name: "Carol White", skill: "Java", score: 92 },
+            { name: "David Brown", skill: "C++", score: 88 },
+            { name: "Eve Davis", skill: "Python", score: 95 },
+            { name: "Frank Miller", skill: "JavaScript", score: 81 },
+            { name: "Grace Lee", skill: "Java", score: 89 },
+            { name: "Henry Wilson", skill: "C++", score: 76 }
+        ];
+
+        // Load sample data
+        sampleCandidates.forEach(c => tree.insert(c.name, c.skill, c.score));
+        updateDashboard();
+
+        function addCandidate() {
+            const name = document.getElementById('name').value.trim();
+            const skill = document.getElementById('skill').value.trim();
+            const scoreInput = document.getElementById('score').value.trim();
+
+            // Validation
+            if (!name) {
+                alert('❌ Please enter a candidate name');
+                return;
+            }
+            if (!skill) {
+                alert('❌ Please enter a skill');
+                return;
+            }
+            if (!scoreInput) {
+                alert('❌ Please enter a score');
+                return;
+            }
+
+            const score = parseInt(scoreInput);
+            if (isNaN(score) || score < 0 || score > 100) {
+                alert('❌ Score must be between 0 and 100');
+                return;
+            }
+
+            // Add candidate
+            tree.insert(name, skill, score);
+            
+            // Show animation info
+            showAnimationInfo(`✨ Added ${name} with score ${score}. Tree auto-balanced!`);
+            
+            // Reset form
+            resetForm();
+            
+            // Update dashboard
+            updateDashboard();
+        }
+
+        function resetForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('skill').value = '';
+            document.getElementById('score').value = '';
+            document.getElementById('name').focus();
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear all candidates? This cannot be undone.')) {
+                tree.root = null;
+                updateDashboard();
+                showAnimationInfo('🗑️ All candidates cleared');
+            }
+        }
+
+        function showAnimationInfo(message) {
+            const info = document.getElementById('animationInfo');
+            info.textContent = message;
+            info.classList.add('show');
+            setTimeout(() => info.classList.remove('show'), 3000);
+        }
+
+        function updateDashboard() {
+            drawTree();
+            updateCandidatesList();
+            updateStats();
+        }
+
+        function drawTree() {
+            const svgElement = document.getElementById('canvas');
+            svgElement.innerHTML = '';
+
+            if (tree.isEmpty()) {
+                svgElement.innerHTML = '<text x="50%" y="50%" text-anchor="middle" dy="0.3em" fill="#999" font-size="16">Tree is empty</text>';
+                return;
+            }
+
+            const width = svgElement.parentElement.offsetWidth - 50;
+            const height = 500;
+
+            const svg = d3.select('#canvas')
+                .attr('width', width)
+                .attr('height', height);
+
+            const hierarchyData = d3.hierarchy(nodeToHierarchy(tree.root));
+            const treeLayout = d3.tree().size([width - 80, height - 80]);
+            treeLayout(hierarchyData);
+
+            // Create a group for all content with padding
+            const g = svg.append('g')
+                .attr('transform', 'translate(40, 40)');
+
+            // Draw links
+            g.selectAll('.link')
+                .data(hierarchyData.links())
+                .enter()
+                .append('line')
+                .attr('class', 'link-line')
+                .attr('x1', d => d.source.x)
+                .attr('y1', d => d.source.y)
+                .attr('x2', d => d.target.x)
+                .attr('y2', d => d.target.y);
+
+            // Draw nodes
+            const nodeGroup = g.selectAll('.node')
+                .data(hierarchyData.descendants())
+                .enter()
+                .append('g')
+                .attr('transform', d => `translate(${d.x},${d.y})`);
+
+            nodeGroup.append('circle')
+                .attr('class', 'node-circle')
+                .attr('r', 25);
+
+            nodeGroup.append('text')
+                .attr('class', 'node-text')
+                .attr('dy', '0.3em')
+                .text(d => d.data.score);
+        }
+
+        function nodeToHierarchy(node, index = 0) {
+            if (!node) return null;
+            return {
+                score: node.score,
+                name: node.name,
+                id: index,
+                children: [
+                    node.left ? nodeToHierarchy(node.left, index * 2 + 1) : null,
+                    node.right ? nodeToHierarchy(node.right, index * 2 + 2) : null
+                ].filter(d => d !== null)
+            };
+        }
+
+        function updateCandidatesList() {
+            const candidates = tree.getReverseInorder();
+            const tbody = document.getElementById('candidatesBody');
+
+            if (candidates.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="empty-message">No candidates added yet. Start by adding a candidate!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = candidates.map((c, idx) => `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td><strong>${c.name}</strong></td>
+                    <td>${c.skill}</td>
+                    <td><strong>${c.score}</strong></td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStats() {
+            const height = tree.getHeight(tree.root);
+            const candidates = tree.getReverseInorder();
+            const balance = tree.getBalance(tree.root);
+
+            document.getElementById('treeHeight').textContent = height;
+            document.getElementById('totalNodes').textContent = candidates.length;
+            document.getElementById('balanceFactor').textContent = balance;
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            updateDashboard();
+        });
+    </script>
+</body>
+</html>
