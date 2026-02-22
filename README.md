@@ -1,4 +1,4 @@
-# 🌳 AVL Tree Candidate Dashboard
+# AVL Tree Candidate Dashboard
 
 A comprehensive skill-based candidate shortlisting system built with **AVL Trees** in C++ and an interactive visualization dashboard in HTML/JavaScript.
 
@@ -9,6 +9,7 @@ This project demonstrates the implementation and visualization of **self-balanci
 ## ✨ Features
 
 ### C++ Implementation (`DSA_Project/main.cpp`)
+
 - ✅ **AVL Tree Data Structure** - Self-balancing binary search tree with automatic rotations
 - ✅ **Add Candidates** - Insert new candidates with name, skill, and score
 - ✅ **Search Operations** - Search by skill with score-based sorting
@@ -18,6 +19,7 @@ This project demonstrates the implementation and visualization of **self-balanci
 - ✅ **Interactive Menu** - Command-line interface for easy interaction
 
 ### Web Dashboard (`dashboard.html`)
+
 - 🎨 **Real-time Tree Visualization** - D3.js powered interactive tree display
 - ➕ **Add Candidates** - Web form to add candidates dynamically
 - 📊 **Tree Statistics** - Shows tree height, total nodes, and balance factor
@@ -40,6 +42,7 @@ CPP_Codespace/
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - **C++ Compiler**: g++ or clang
 - **Python 3**: For running HTTP server (optional, for dashboard)
 - **Modern Web Browser**: For dashboard visualization
@@ -66,6 +69,7 @@ g++ DSA_Project/main.cpp -o main
 ```
 
 **Menu Options:**
+
 1. Add new candidate
 2. Display all candidates (highest → lowest score)
 3. Search by skill
@@ -83,6 +87,7 @@ npx http-server
 ```
 
 **Then open in browser:**
+
 ```
 http://localhost:8000/dashboard.html
 ```
@@ -91,12 +96,12 @@ http://localhost:8000/dashboard.html
 
 ### Key Concepts
 
-| Aspect | Benefit |
-|--------|---------|
-| **Height Balance** | Left and right subtrees differ by at most 1 |
+| Aspect                    | Benefit                                          |
+| ------------------------- | ------------------------------------------------ |
+| **Height Balance**  | Left and right subtrees differ by at most 1      |
 | **Time Complexity** | O(log n) for search, insert, delete (guaranteed) |
-| **Rotations** | LL, RR, LR, RL cases maintain balance |
-| **Use Cases** | Databases, file systems, priority queues |
+| **Rotations**       | LL, RR, LR, RL cases maintain balance            |
+| **Use Cases**       | Databases, file systems, priority queues         |
 
 ### Rotations
 
@@ -116,6 +121,7 @@ T1  Y                 Y   T4        T1  B             C   T4
 ### Adding Candidates
 
 1. **Initial Tree** (with sample data):
+
    ```
            85
           /  \
@@ -125,17 +131,17 @@ T1  Y                 Y   T4        T1  B             C   T4
              /
            89
    ```
-
 2. **Add "John Doe" with score 80**:
+
    - Tree detects imbalance
    - Performs rotation to maintain height balance
    - Final height ≤ log₂(n)
-
 3. **Result**: Tree remains balanced, search operations stay efficient
 
 ## 🎓 Data Structures & Algorithms
 
 ### Candidate Structure
+
 ```cpp
 struct Candidate {
     string name;      // Candidate name
@@ -145,6 +151,7 @@ struct Candidate {
 ```
 
 ### AVL Node Structure
+
 ```cpp
 struct AVLNode {
     Candidate candidate;
@@ -156,22 +163,24 @@ struct AVLNode {
 
 ### Key Operations
 
-| Operation | Time | Space |
-|-----------|------|-------|
-| Insert | O(log n) | O(1) |
-| Search | O(log n) | O(1) |
-| Delete | O(log n) | O(1) |
-| Traversal | O(n) | O(log n) |
+| Operation | Time     | Space    |
+| --------- | -------- | -------- |
+| Insert    | O(log n) | O(1)     |
+| Search    | O(log n) | O(1)     |
+| Delete    | O(log n) | O(1)     |
+| Traversal | O(n)     | O(log n) |
 
 ## 🔧 Technical Stack
 
 ### C++ Implementation
+
 - **Language**: C++11
 - **Standard Library**: `bits/stdc++.h`
 - **Paradigm**: Object-Oriented Programming
 - **Compilation**: G++ with standard flags
 
 ### Web Dashboard
+
 - **Frontend**: HTML5 + CSS3
 - **Visualization**: D3.js v7
 - **JavaScript**: ES6+
@@ -212,16 +221,16 @@ git push origin feature/your-feature
 
 The system comes with 8 pre-loaded candidates:
 
-| Name | Skill | Score |
-|------|-------|-------|
-| Alice Johnson | Python | 85 |
-| Bob Smith | JavaScript | 78 |
-| Carol White | Java | 92 |
-| David Brown | C++ | 88 |
-| Eve Davis | Python | 95 |
-| Frank Miller | JavaScript | 81 |
-| Grace Lee | Java | 89 |
-| Henry Wilson | C++ | 76 |
+| Name          | Skill      | Score |
+| ------------- | ---------- | ----- |
+| Alice Johnson | Python     | 85    |
+| Bob Smith     | JavaScript | 78    |
+| Carol White   | Java       | 92    |
+| David Brown   | C++        | 88    |
+| Eve Davis     | Python     | 95    |
+| Frank Miller  | JavaScript | 81    |
+| Grace Lee     | Java       | 89    |
+| Henry Wilson  | C++        | 76    |
 
 ## 📧 Contact
 
